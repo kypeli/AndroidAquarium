@@ -24,7 +24,7 @@ public class AquariumValueReader {
         mVolleyQueue = Volley.newRequestQueue(context);
     }
 
-    public Observable<AquariumReadings.Reading> getAquariumReadings() {
+    public Observable<AquariumReadings.Reading> getAquariumReadingsObservable() {
         return Observable.create(new Observable.OnSubscribe<AquariumReadings.Reading>() {
             @Override
             public void call(final Subscriber<? super AquariumReadings.Reading> subscriber) {
@@ -34,10 +34,10 @@ public class AquariumValueReader {
                                     new Response.Listener<AquariumReadings>() {
                                         @Override
                                         public void onResponse(AquariumReadings aquariumReadings) {
-                                            for(AquariumReadings.Reading r : aquariumReadings.readings) {
+                                            mAquariumReadings = aquariumReadings.readings;
+                                            for(AquariumReadings.Reading r : mAquariumReadings) {
                                                 subscriber.onNext(r);
                                             }
-
                                             subscriber.onCompleted();
                                         }
                                     },
@@ -50,7 +50,12 @@ public class AquariumValueReader {
                             );
 
                     mVolleyQueue.add(getReadings);
+                } else {
+                    for (AquariumReadings.Reading r : mAquariumReadings) {
+                        subscriber.onNext(r);
+                    }
                 }
+                subscriber.onCompleted();
             }
         }).subscribeOn(Schedulers.io());
     }

@@ -34,12 +34,12 @@ public class TemperatureFragment extends Fragment {
         super.onCreate(savedInstanceState);
 
         AquariumValueReader valueReader = new AquariumValueReader(getActivity().getBaseContext());
-        Observable<AquariumReadings.Reading> observable = valueReader.getAquariumReadings();
+        Observable<AquariumReadings.Reading> observable = valueReader.getAquariumReadingsObservable();
         observable.subscribe(new Action1<AquariumReadings.Reading>() {
 
             @Override
             public void call(AquariumReadings.Reading reading) {
-                Log.d("reading", "Got new reading - value:" + reading.temperature + ", date: " + reading.timestamp.toString());
+                Log.d("reading", "Got new reading - value: " + reading.temperature + ", date: " + reading.timestamp.toString());
             }
         });
     }

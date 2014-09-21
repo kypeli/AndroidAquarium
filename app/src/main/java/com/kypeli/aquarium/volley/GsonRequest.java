@@ -15,9 +15,6 @@ import com.kypeli.aquarium.models.AquariumReadings;
 import java.io.UnsupportedEncodingException;
 import java.util.Date;
 
-/**
- * Created by Johan on 21/09/2014.
- */
 public class GsonRequest<T> extends Request<T> {
     private final Gson gson;
     private final Class<T> clazz;
