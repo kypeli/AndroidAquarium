@@ -18,7 +18,7 @@ public class AquariumReadings {
     public static class Reading {
         @SerializedName("epoch_timestamp")
         public long epoch;
-        public String temperature;
+        public Float temperature;
         public Date timestamp;
     }
 

@@ -2,12 +2,32 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/black"
     tools:context="com.kypeli.aquarium.TemperatureFragment">
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:text="@string/hello_blank_fragment" />
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:id="@+id/temperature_graph_layout"
+            android:layout_width="match_parent"
+            android:layout_height="250dip"
+            android:orientation="vertical"
+            />
+
+        <TextView
+            android:id="@+id/temperature_text"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:textColor="@color/white"
+            android:textSize="14pt"
+            android:gravity="center"
+            />
+
+    </LinearLayout>
+
+
 
 </FrameLayout>

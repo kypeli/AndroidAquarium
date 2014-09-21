@@ -35,9 +35,37 @@ public class AquariumValueReader {
                                         @Override
                                         public void onResponse(AquariumReadings aquariumReadings) {
                                             mAquariumReadings = aquariumReadings.readings;
-                                            for(AquariumReadings.Reading r : mAquariumReadings) {
-                                                subscriber.onNext(r);
-                                            }
+                                            publishAllReading(subscriber);
+                                        }
+                                    },
+                                    new Response.ErrorListener() {
+                                        @Override
+                                        public void onErrorResponse(VolleyError volleyError) {
+                                            Log.d("json", "ERROR: " + volleyError.toString());
+                                        }
+                                    }
+                            );
+
+                    mVolleyQueue.add(getReadings);
+                } else {
+                    publishAllReading(subscriber);
+                }
+            }
+        }).subscribeOn(Schedulers.io());
+    }
+
+    public Observable<AquariumReadings.Reading> getLatestAquariumReadingObservable() {
+        return Observable.create(new Observable.OnSubscribe<AquariumReadings.Reading>() {
+            @Override
+            public void call(final Subscriber<? super AquariumReadings.Reading> subscriber) {
+                if (mAquariumReadings == null) {
+                    GsonRequest<AquariumReadings> getReadings =
+                            new GsonRequest<AquariumReadings>("http://johan.paul.fi/aquarium/api/v1/measurements", AquariumReadings.class,
+                                    new Response.Listener<AquariumReadings>() {
+                                        @Override
+                                        public void onResponse(AquariumReadings aquariumReadings) {
+                                            mAquariumReadings = aquariumReadings.readings;
+                                            subscriber.onNext(mAquariumReadings.get(mAquariumReadings.size()-1));
                                             subscriber.onCompleted();
                                         }
                                     },
@@ -51,12 +79,20 @@ public class AquariumValueReader {
 
                     mVolleyQueue.add(getReadings);
                 } else {
-                    for (AquariumReadings.Reading r : mAquariumReadings) {
-                        subscriber.onNext(r);
-                    }
+                    subscriber.onNext(mAquariumReadings.get(mAquariumReadings.size()-1));
+                    subscriber.onCompleted();
                 }
-                subscriber.onCompleted();
             }
         }).subscribeOn(Schedulers.io());
+    }
+
+    private void publishAllReading(Subscriber<? super AquariumReadings.Reading> subscriber) {
+        if (mAquariumReadings != null) {
+            for (AquariumReadings.Reading r : mAquariumReadings) {
+                subscriber.onNext(r);
+            }
+            subscriber.onCompleted();
+        }
+
     }
 }

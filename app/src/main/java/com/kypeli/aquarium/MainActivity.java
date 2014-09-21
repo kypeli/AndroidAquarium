@@ -1,5 +1,6 @@
 package com.kypeli.aquarium;
 
+import java.util.ArrayList;
 import java.util.Locale;
 
 import android.app.Activity;
@@ -111,16 +112,16 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
      * one of the sections/tabs/pages.
      */
     public class SectionsPagerAdapter extends FragmentPagerAdapter {
+        private ArrayList<Fragment> mFragments = new ArrayList<Fragment>();
 
         public SectionsPagerAdapter(FragmentManager fm) {
             super(fm);
+            mFragments.add(TemperatureFragment.newInstance());
         }
 
         @Override
         public Fragment getItem(int position) {
-            // getItem is called to instantiate the fragment for the given page.
-            // Return a PlaceholderFragment (defined as a static inner class below).
-            return TemperatureFragment.newInstance();
+            return mFragments.get(position);
         }
 
         @Override
