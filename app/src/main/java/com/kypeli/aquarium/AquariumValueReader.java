@@ -8,7 +8,9 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.Volley;
 import com.kypeli.aquarium.models.AquariumReadings;
+import com.kypeli.aquarium.models.AquariumReadingsJackson;
 import com.kypeli.aquarium.volley.GsonRequest;
+import com.kypeli.aquarium.volley.JacksonRequest;
 
 import rx.Observable;
 import rx.Subscriber;
@@ -19,30 +21,29 @@ import rx.subjects.ReplaySubject;
 
 public class AquariumValueReader {
     private RequestQueue mVolleyQueue = null;
-    private final ReplaySubject<AquariumReadings.Reading> readingsReplaySubject = ReplaySubject.create();
+    private final ReplaySubject<AquariumReadingsJackson.Reading> readingsReplaySubject = ReplaySubject.create();
 
     public AquariumValueReader(Context context) {
         mVolleyQueue = Volley.newRequestQueue(context);
         fetchDataToSubject(readingsReplaySubject);
     }
 
-    public Observable<AquariumReadings.Reading> getAquariumReadingsObservable() {
-        return Observable.create(new Observable.OnSubscribe<AquariumReadings.Reading>() {
+    public Observable<AquariumReadingsJackson.Reading> getAquariumReadingsObservable() {
+        return Observable.create(new Observable.OnSubscribe<AquariumReadingsJackson.Reading>() {
             @Override
-            public void call(final Subscriber<? super AquariumReadings.Reading> subscriber) {
+            public void call(final Subscriber<? super AquariumReadingsJackson.Reading> subscriber) {
                 readingsReplaySubject.subscribe(
                         // onNext
-                        new Action1<AquariumReadings.Reading>() {
+                        new Action1<AquariumReadingsJackson.Reading>() {
                             @Override
-                            public void call(AquariumReadings.Reading reading) {
+                            public void call(AquariumReadingsJackson.Reading reading) {
                                 subscriber.onNext(reading);
                             }
                         },
                         // onError
                         new Action1<Throwable>() {
                             @Override
-                            public void call(Throwable throwable) {
-                            }
+                            public void call(Throwable throwable) {}
                         },
                         // onCompleted
                         new Action0() {
@@ -55,16 +56,16 @@ public class AquariumValueReader {
         }).subscribeOn(Schedulers.io());
     }
 
-    public Observable<AquariumReadings.Reading> getLatestAquariumReadingObservable() {
-        return Observable.create(new Observable.OnSubscribe<AquariumReadings.Reading>() {
+    public Observable<AquariumReadingsJackson.Reading> getLatestAquariumReadingObservable() {
+        return Observable.create(new Observable.OnSubscribe<AquariumReadingsJackson.Reading>() {
             @Override
-            public void call(final Subscriber<? super AquariumReadings.Reading> subscriber) {
+            public void call(final Subscriber<? super AquariumReadingsJackson.Reading> subscriber) {
                 readingsReplaySubject
                         .last()
-                        .subscribe(new Action1<AquariumReadings.Reading>() {
+                        .subscribe(new Action1<AquariumReadingsJackson.Reading>() {
                             // onNext
                             @Override
-                            public void call(AquariumReadings.Reading reading) {
+                            public void call(AquariumReadingsJackson.Reading reading) {
                                 subscriber.onNext(reading);
                                 subscriber.onCompleted();
                             }
@@ -73,13 +74,13 @@ public class AquariumValueReader {
         }).subscribeOn(Schedulers.io());
     }
 
-    private void fetchDataToSubject(final ReplaySubject<AquariumReadings.Reading> readingsReplaySubject) {
-        GsonRequest<AquariumReadings> getReadings =
-                new GsonRequest<AquariumReadings>("http://johan.paul.fi/aquarium/api/v1/measurements", AquariumReadings.class,
-                        new Response.Listener<AquariumReadings>() {
+    private void fetchDataToSubject(final ReplaySubject<AquariumReadingsJackson.Reading> readingsReplaySubject) {
+        JacksonRequest<AquariumReadingsJackson> getReadings =
+                new JacksonRequest<AquariumReadingsJackson>("http://johan.paul.fi/aquarium/api/v1/measurements", AquariumReadingsJackson.class,
+                        new Response.Listener<AquariumReadingsJackson>() {
                             @Override
-                            public void onResponse(AquariumReadings aquariumReadings) {
-                                for (AquariumReadings.Reading r : aquariumReadings.readings) {
+                            public void onResponse(AquariumReadingsJackson aquariumReadings) {
+                                for (AquariumReadingsJackson.Reading r : aquariumReadings.readings) {
                                     readingsReplaySubject.onNext(r);
                                 }
                                 readingsReplaySubject.onCompleted();

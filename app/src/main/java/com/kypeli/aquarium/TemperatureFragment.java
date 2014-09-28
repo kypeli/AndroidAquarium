@@ -14,6 +14,7 @@ import com.jjoe64.graphview.GraphView;
 import com.jjoe64.graphview.GraphViewSeries;
 import com.jjoe64.graphview.LineGraphView;
 import com.kypeli.aquarium.models.AquariumReadings;
+import com.kypeli.aquarium.models.AquariumReadingsJackson;
 
 import java.util.ArrayList;
 
@@ -46,14 +47,14 @@ public class TemperatureFragment extends Fragment {
 
         AquariumValueReader valueReader = new AquariumValueReader(getActivity().getBaseContext());
 
-        Observable<AquariumReadings.Reading> observableAllValues = valueReader.getAquariumReadingsObservable();
+        Observable<AquariumReadingsJackson.Reading> observableAllValues = valueReader.getAquariumReadingsObservable();
         observableAllValues
                 .subscribe(
                         // onNext
-                        new Action1<AquariumReadings.Reading>() {
+                        new Action1<AquariumReadingsJackson.Reading>() {
 
                             @Override
-                            public void call(AquariumReadings.Reading reading) {
+                            public void call(AquariumReadingsJackson.Reading reading) {
                                 Log.d("reading", "Got new reading - value: " + reading.temperature);
                                 mTemperatureData.add(mTemperatureData.size(), new GraphView.GraphViewData(mTemperatureData.size(), reading.temperature));
                             }
@@ -83,14 +84,14 @@ public class TemperatureFragment extends Fragment {
                         });
 
 
-        Observable<AquariumReadings.Reading> observableLatestValues = valueReader.getLatestAquariumReadingObservable();
+        Observable<AquariumReadingsJackson.Reading> observableLatestValues = valueReader.getLatestAquariumReadingObservable();
         observableLatestValues
                 .subscribe(
                         // onNext
-                        new Action1<AquariumReadings.Reading>() {
+                        new Action1<AquariumReadingsJackson.Reading>() {
 
                             @Override
-                            public void call(AquariumReadings.Reading reading) {
+                            public void call(AquariumReadingsJackson.Reading reading) {
                                 Log.d("reading", "Got latest value: " + reading.temperature);
                                 TextView tempText = (TextView)getActivity().findViewById(R.id.temperature_text);
                                 tempText.setText("Current: " + reading.temperature + " \u00B0C");
